@@ -80,9 +80,49 @@ namespace Bloggie.Web.Controllers
 
             // 2. Metod
             var tag = bloggieDbContext.Tags.FirstOrDefault(t => t.Id == id);
-            return View();
+
+
+            if (tag != null)
+            {
+                var editTagReq = new EditTagRequest
+                {
+                    Id = tag.Id,
+                    Name = tag.Name,
+                    DisplayName = tag.DisplayName,
+                };
+                return View(editTagReq);
+            }
+            
+
+            return View(null);
         }
 
+        [HttpPost]
+        [ActionName("Edit")]
+        public IActionResult Edit(EditTagRequest editTagRequest)
+        {
+            var tag = new Tag
+            {
+                Id = editTagRequest.Id,
+                Name = editTagRequest.Name,
+                DisplayName = editTagRequest.DisplayName
+            };
+            var existingTag = bloggieDbContext.Tags.Find(tag.Id);
+            //existingTag.Name = tag.Name;
+            //existingTag.DisplayName = tag.DisplayName;
+
+            if (existingTag != null)
+            {
+                existingTag.Name = tag.Name;
+                existingTag.DisplayName = tag.DisplayName;
+                bloggieDbContext.SaveChanges();
+                return RedirectToAction("List");
+            }
+            
+            return RedirectToAction("Edit", new {id = editTagRequest.Id });
+
+
+        }
 
 
     }
