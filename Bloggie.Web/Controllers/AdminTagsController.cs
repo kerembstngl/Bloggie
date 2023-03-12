@@ -60,7 +60,7 @@ namespace Bloggie.Web.Controllers
 
             bloggieDbContext.Add(tag);
             bloggieDbContext.SaveChanges();
-            return View("Add");
+            return RedirectToAction("List");
         }
 
         // Tagleri Listeleme Metodu
@@ -69,6 +69,18 @@ namespace Bloggie.Web.Controllers
         {
             var tags = bloggieDbContext.Tags.ToList();
             return View(tags);
+        }
+        
+        // Edit sayfasının görüntülenme action'u
+        [HttpGet]
+        public IActionResult Edit(Guid id)
+        {
+            // 1. Metod
+            //var tag = bloggieDbContext.Tags.Find(id);
+
+            // 2. Metod
+            var tag = bloggieDbContext.Tags.FirstOrDefault(t => t.Id == id);
+            return View();
         }
 
 
