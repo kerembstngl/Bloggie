@@ -2,6 +2,7 @@
 using Bloggie.Web.Models.Domain;
 using Bloggie.Web.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Bloggie.Web.Controllers
 {
@@ -18,7 +19,7 @@ namespace Bloggie.Web.Controllers
         }
         // Tag Ekleme GET Metodu
         [HttpGet]
-        public IActionResult Add()
+        public async Task<IActionResult> Add()
         {
             return View();
         }
@@ -50,7 +51,7 @@ namespace Bloggie.Web.Controllers
         // Tag Ekleme Post Metodu
         [HttpPost]
         [ActionName("Add")]
-        public IActionResult Add (AddTagRequest addTagRequest)
+        public async Task<IActionResult> Add (AddTagRequest addTagRequest)
         {
             var tag = new Tag
             {
@@ -58,28 +59,28 @@ namespace Bloggie.Web.Controllers
                 DisplayName = addTagRequest.DisplayName,
             };
 
-            bloggieDbContext.Add(tag);
-            bloggieDbContext.SaveChanges();
+            await bloggieDbContext.AddAsync(tag);
+            await bloggieDbContext.SaveChangesAsync();
             return RedirectToAction("List");
         }
 
         // Tagleri Listeleme Metodu
         [HttpGet]
-        public IActionResult List()
+        public async Task<IActionResult> List()
         {
-            var tags = bloggieDbContext.Tags.ToList();
+            var tags = await bloggieDbContext.Tags.ToListAsync();
             return View(tags);
         }
         
         // Edit sayfasının görüntülenme action'u
         [HttpGet]
-        public IActionResult Edit(Guid id)
+        public async Task<IActionResult> Edit(Guid id)
         {
             // 1. Metod
             //var tag = bloggieDbContext.Tags.Find(id);
 
             // 2. Metod
-            var tag = bloggieDbContext.Tags.FirstOrDefault(t => t.Id == id);
+            var tag = await bloggieDbContext.Tags.FirstOrDefaultAsync(t => t.Id == id);
 
 
             if (tag != null)
@@ -99,7 +100,7 @@ namespace Bloggie.Web.Controllers
 
         [HttpPost]
         [ActionName("Edit")]
-        public IActionResult Edit(EditTagRequest editTagRequest)
+        public async Task<IActionResult> Edit(EditTagRequest editTagRequest)
         {
             var tag = new Tag
             {
@@ -107,7 +108,7 @@ namespace Bloggie.Web.Controllers
                 Name = editTagRequest.Name,
                 DisplayName = editTagRequest.DisplayName
             };
-            var existingTag = bloggieDbContext.Tags.Find(tag.Id);
+            var existingTag = await bloggieDbContext.Tags.FindAsync(tag.Id);
             //existingTag.Name = tag.Name;
             //existingTag.DisplayName = tag.DisplayName;
 
@@ -115,7 +116,7 @@ namespace Bloggie.Web.Controllers
             {
                 existingTag.Name = tag.Name;
                 existingTag.DisplayName = tag.DisplayName;
-                bloggieDbContext.SaveChanges();
+                await bloggieDbContext.SaveChangesAsync();
                 return RedirectToAction("List");
             }
             
@@ -126,13 +127,13 @@ namespace Bloggie.Web.Controllers
 
         // Delete Metodu
         [HttpPost]
-        public IActionResult Delete(EditTagRequest editTagRequest) 
+        public async Task<IActionResult> Delete(EditTagRequest editTagRequest) 
         {
-            var tag = bloggieDbContext.Tags.Find(editTagRequest.Id);
+            var tag = await bloggieDbContext.Tags.FindAsync(editTagRequest.Id);
             if (tag != null)
             {
                 bloggieDbContext.Remove(tag);
-                bloggieDbContext.SaveChanges();
+                await bloggieDbContext.SaveChangesAsync();
                 return RedirectToAction("List");
 
             }
