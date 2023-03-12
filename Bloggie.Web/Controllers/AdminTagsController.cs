@@ -59,8 +59,7 @@ namespace Bloggie.Web.Controllers
                 DisplayName = addTagRequest.DisplayName,
             };
 
-            await bloggieDbContext.AddAsync(tag);
-            await bloggieDbContext.SaveChangesAsync();
+           
             return RedirectToAction("List");
         }
 
