@@ -13,6 +13,8 @@ builder.Services.AddDbContext<BloggieDbContext>(options => options.UseSqlServer(
 // Oluþturmuþ olduðumuz tag repositoryi ve itaginterface i artýk dbcontextmiþ gibi kullanabilmek ve classlarýmýza enjekte edebilmek için aþaðýdaki builder servisini kullanýyoruz. Artýk controllerda tagrepositoryi kullanarak DbContex eriþimini dolaylý yoldan saðlamýþ olacaðýz.
 
 builder.Services.AddScoped<ITagInterface, TagRepository>();
+builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
+
 
 var app = builder.Build();
 

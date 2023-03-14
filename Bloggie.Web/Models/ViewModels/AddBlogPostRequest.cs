@@ -19,7 +19,7 @@ namespace Bloggie.Web.Models.ViewModels
         public IEnumerable<SelectListItem> Tags { get; set; }
 
         // Seçili tag için
-        public string SelectedTag { get; set; }
+        public string[] SelectedTags { get; set; }
 
     }
 }
