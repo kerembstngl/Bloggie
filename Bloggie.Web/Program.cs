@@ -1,5 +1,6 @@
 using Bloggie.Web.Data;
 using Bloggie.Web.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,22 @@ builder.Services.AddControllersWithViews();
 
 // Dbcontexti builder özelliklerini kullanarak çaðýralým
 builder.Services.AddDbContext<BloggieDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("BloggieDbConnectionString")));
+
+builder.Services.AddDbContext<AuthDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("BloggieAuthDbConnectionString")));
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AuthDbContext>();
+
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    // Default Settings
+    options.Password.RequireDigit = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequiredLength = 6;
+    options.Password.RequiredUniqueChars = 1;
+});
+
 
 // Oluþturmuþ olduðumuz tag repositoryi ve itaginterface i artýk dbcontextmiþ gibi kullanabilmek ve classlarýmýza enjekte edebilmek için aþaðýdaki builder servisini kullanýyoruz. Artýk controllerda tagrepositoryi kullanarak DbContex eriþimini dolaylý yoldan saðlamýþ olacaðýz.
 
@@ -32,6 +49,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

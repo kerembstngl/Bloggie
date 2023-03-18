@@ -6,92 +6,73 @@ namespace Bloggie.Web.Data
 {
     public class AuthDbContext : IdentityDbContext
     {
-        public AuthDbContext(DbContextOptions options) : base(options)
+        public AuthDbContext(DbContextOptions<AuthDbContext> options) : base(options)
         {
 
         }
-
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
-
-            // Seed Roles (user, admin, superadmin)
-            var adminRoleId = "fbc1a14c-dd72-4ba4-bf59-3932c1fb153a";
-            var superAdminRoleId = "aa6d6fbd-a585-4f97-949a-0b1b79ccca8e";
-            var userRoleId = "7fc51aff-ae13-459e-960d-3ad0028d5a91";
-
-
+            var adminRoleId = "9c06aec5 - 2d83 - 4967 - a9ed - 33c60cc0a3af";
+            var superAdminRoleId = "24aa50d0-8e85-42e2-b9e8-54889c706b28";
+            var userRoleId = "26240079-8a28-46f3-bd53-36a6df04f714";
+            //Seed Roles (User,Admin, SuperAdmin)
             var roles = new List<IdentityRole>
             {
                 new IdentityRole
                 {
                     Name = "Admin",
-                    NormalizedName = "Admin",
-                    Id = "adminRoleId",
+                    NormalizedName= "Admin",
+                    Id = adminRoleId,
                     ConcurrencyStamp = adminRoleId
-                },
-                new IdentityRole
+                }, new IdentityRole
                 {
                     Name = "SuperAdmin",
-                    NormalizedName = "SuperAdmin",
-                    Id = "aa6d6fbd-a585-4f97-949a-0b1b79ccca8e",
+                    NormalizedName= "SuperAdmin",
+                    Id = superAdminRoleId,
                     ConcurrencyStamp = superAdminRoleId
-                },
-                 new IdentityRole
+                },new IdentityRole
                 {
                     Name = "User",
-                    NormalizedName = "User",
-                    Id = "userRoleId",
+                    NormalizedName= "User",
+                    Id = userRoleId,
                     ConcurrencyStamp = userRoleId
-                },
+                }
             };
-
             builder.Entity<IdentityRole>().HasData(roles);
 
-
-            // Seed SuperAdminUser
-
-            var superAdminId = "cae0c706-826f-4342-8696-894e2dd8e11f";
+            //Seed SuperAdminUser
+            var superAdminId = "e3d0ef91-a66a-46d6-a148-62fe9b6357cb";
             var superAdminUser = new IdentityUser
             {
                 UserName = "superadmin@bloggie.com",
                 Email = "superadmin@bloggie.com",
                 NormalizedEmail = "superadmin@bloggie.com".ToUpper(),
                 NormalizedUserName = "superadmin@bloggie.com".ToUpper(),
-                Id = superAdminId,
+                Id = superAdminId
             };
-
-            superAdminUser.PasswordHash = new PasswordHasher<IdentityUser>().HashPassword(superAdminUser,"Superadmin@123");
-
+            superAdminUser.PasswordHash = new PasswordHasher<IdentityUser>().HashPassword(superAdminUser, "Superadmin@123");
             builder.Entity<IdentityUser>().HasData(superAdminUser);
 
-
-            // Add All roles to SuperAdmin
-
+            //Add All Roles to SuperAdmin
             var superAdminRoles = new List<IdentityUserRole<string>>
             {
                 new IdentityUserRole<string>
                 {
                     RoleId = adminRoleId,
                     UserId = superAdminId,
-                },
-                new IdentityUserRole<string>
+                }, new IdentityUserRole<string>
                 {
                     RoleId = superAdminRoleId,
                     UserId = superAdminId,
-                },
-                new IdentityUserRole<string>
+                }, new IdentityUserRole<string>
                 {
                     RoleId = userRoleId,
                     UserId = superAdminId,
-                },
+                }
             };
 
-
-
-
-
+            builder.Entity<IdentityUserRole<string>>().HasData(superAdminRoles);
         }
     }
 }
