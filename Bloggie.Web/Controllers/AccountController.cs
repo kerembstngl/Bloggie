@@ -7,12 +7,13 @@ namespace Bloggie.Web.Controllers
     public class AccountController : Controller
     {
         private readonly UserManager<IdentityUser> userManager;
+        private readonly SignInManager<IdentityUser> signInManager;
 
-        public AccountController(UserManager<IdentityUser> userManager)
+        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
         {
             this.userManager = userManager;
+            this.signInManager = signInManager;
         }
-
 
 
         [HttpGet]
@@ -20,11 +21,11 @@ namespace Bloggie.Web.Controllers
         {
             return View();
         }
-        
 
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel registerViewModel)
         {
+
             var identityUser = new IdentityUser
             {
                 UserName = registerViewModel.Username,
@@ -35,17 +36,57 @@ namespace Bloggie.Web.Controllers
 
             if (identityResult.Succeeded)
             {
-                // Bu kullanıcıya rolünü verelim
+                //Bu kullanıcıya rolünü verelim.
                 var roleIdentityResult = await userManager.AddToRoleAsync(identityUser, "User");
-                
                 if (roleIdentityResult.Succeeded)
                 {
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Login");
                 }
             }
 
             return View();
         }
 
+
+
+        [HttpGet]
+        public IActionResult Login(string ReturnUrl)
+        {
+            var model = new LoginViewModel { ReturnUrl = ReturnUrl };
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel loginViewModel)
+        {
+            var signInResult = await signInManager.PasswordSignInAsync(loginViewModel.Username, loginViewModel.Password, false, false);
+
+            if (signInResult.Succeeded && signInResult != null)
+            {
+                if(!string.IsNullOrWhiteSpace(loginViewModel.ReturnUrl))
+                {
+                    return Redirect(loginViewModel.ReturnUrl);
+                }
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View();
+        }
+
+
+
+        public async Task<IActionResult> Logout()
+        {
+            await signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
+
+        }
+
+        public async Task<IActionResult> AccessDenied()
+        {
+            return View();
+
+        }
     }
 }

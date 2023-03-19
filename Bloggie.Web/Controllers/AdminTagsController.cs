@@ -2,13 +2,17 @@
 using Bloggie.Web.Models.Domain;
 using Bloggie.Web.Models.ViewModels;
 using Bloggie.Web.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bloggie.Web.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminTagsController : Controller
     {
+     
+
         private readonly ITagInterface tagRepository;
 
         // Dependency Injection - Daha öncesinde DbContexte özgü bir class tanımladık ve program.cs içerisinde bu classı service özelliklerinden ugulamamıza tanıttık. Bunu yapmaktaki amacımız ihtiyaç duyulan herhangi bir nesne içerisinde ihtiyaç duyduğumuz bu nesneyi çağırabilmek ve nesnenin içerisinde yeniden bu dbcontexti oluşturmadan, mevcutta olan dbcontext üzerine erişim sağlamaktı. Yani DbContextimizi istediğimizi her classa enjekte edebiliyoruz. Bu işleme dependency injection denmektedir. Bu örnekte bunu kullanabilmek için mevcut classımızda bir constructor oluşturduk ve parametre olarak DBCONTEXT nesnemizden bir argüman yolladık bu argüman classın tamamında kullanılamayacağı için bir private field oluşturduk ve bu field ile contructorlardan gelen argümanı eşitleyerek classımız içerisinde field'ımız üzerinden DBCONTEXT nesnesini kullanabiliyor hale geldik.
@@ -20,6 +24,7 @@ namespace Bloggie.Web.Controllers
         }
         // Tag Ekleme GET Metodu
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Add()
         {
             return View();
@@ -52,6 +57,8 @@ namespace Bloggie.Web.Controllers
         // Tag Ekleme Post Metodu
         [HttpPost]
         [ActionName("Add")]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Add (AddTagRequest addTagRequest)
         {
             var tag = new Tag
@@ -67,6 +74,8 @@ namespace Bloggie.Web.Controllers
 
         // Tagleri Listeleme Metodu
         [HttpGet]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> List()
         {
             var tags = await tagRepository.GetAllAsync();
@@ -75,6 +84,8 @@ namespace Bloggie.Web.Controllers
         
         // Edit sayfasının görüntülenme action'u
         [HttpGet]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Edit(Guid id)
         {
             // 1. Metod
@@ -99,6 +110,8 @@ namespace Bloggie.Web.Controllers
 
         [HttpPost]
         [ActionName("Edit")]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Edit(EditTagRequest editTagRequest)
         {
             var tag = new Tag
@@ -121,6 +134,8 @@ namespace Bloggie.Web.Controllers
 
         // Delete Metodu
         [HttpPost]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Delete(EditTagRequest editTagRequest) 
         {   
             var deletedTag = await tagRepository.DeleteAsync(editTagRequest.Id);

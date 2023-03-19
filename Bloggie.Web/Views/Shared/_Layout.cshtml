@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> signInManager
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -8,6 +11,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Bloggie.Web.styles.css" asp-append-version="true" />
     <link href='https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_editor.pkgd.min.css' rel='stylesheet' type='text/css' />
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
     <script type='text/javascript' src='https://cdn.jsdelivr.net/npm/froala-editor@latest/js/froala_editor.pkgd.min.js'></script>
 </head>
 <body>
@@ -22,37 +26,61 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li> 
-                        <li class="nav-item dropdown">
-                            <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                AdminPanel
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-dark">
-                                <li><a class="dropdown-item" asp-area="" asp-controller="AdminTags" asp-action="Add">Add Tag</a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="AdminTags" asp-action="List">List Tags</a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="AdminBlogPosts" asp-action="Add">Add Blog Post</a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="AdminBlogPosts" asp-action="List">List Blog Post</a></li>
-                            </ul>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
+
+
+                        @if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item dropdown">
+                                <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    AdminPanel
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-dark">
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="AdminTags" asp-action="Add">Add Tag</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="AdminTags" asp-action="List">List Tags</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="AdminBlogPosts" asp-action="Add">Add Blog Post</a></li>
+
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="AdminBlogPosts" asp-action="List">List Blog Post</a></li>
+
+                                </ul>
+                            </li>
+                        }
+
+
+
                     </ul>
 
-                    <div class="d-flex">
-                        <a class="btn me-3 bg-light text-dark" asp-controller="Account" asp-action="Register" >Register</a>
-                    </div>
-                    
-                    
+                    @if (signInManager.IsSignedIn(User))
+                    {
+                        <div class="me-3 text-light">
+                            @User?.Identity?.Name
+                        </div>
+
+                        <a class="btn me-3 bg-light text-dark" asp-controller="Account" asp-action="Logout">Logout</a>
+
+                    }
+                    else
+                    {
+                        <div class="d-flex">
+                            <a class="btn me-3 bg-light text-dark" asp-controller="Account" asp-action="Login">Login</a>
+
+                            <a class="btn me-3 bg-light text-dark" asp-controller="Account" asp-action="Register">Register</a>
+                        </div>
+                    }
+
+
                 </div>
             </div>
         </nav>
     </header>
-    <div >
+    <div>
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top text-center footer text-muted">
+    <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2023 - Bloggie.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
